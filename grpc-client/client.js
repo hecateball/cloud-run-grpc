@@ -26,7 +26,7 @@ client.get({ id: 1, name: '甘雨' }, (error, response) => {
 })
 
 // stream
-const channel = client.stream({ id: 1, name: '太郎' })
+const channel = client.stream({ id: 1, name: '甘雨' })
 channel.on('data', (response) => {
   console.log(response)
 })
