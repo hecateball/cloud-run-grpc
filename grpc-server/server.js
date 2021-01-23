@@ -1,12 +1,11 @@
 const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
-const PROTO_PATH = __dirname + '/hello.proto'
 
 const HOST = process.env.HOST || '0.0.0.0'
 const PORT = process.env.PORT || '8080'
 
 const packageDefinition = protoLoader.loadSync(
-  PROTO_PATH,
+  __dirname + '/sample.proto',
   {
     keepCase: true,
     longs: String,
@@ -15,12 +14,20 @@ const packageDefinition = protoLoader.loadSync(
     oneofs: true
   }
 )
-const helloProto = grpc.loadPackageDefinition(packageDefinition)
+const proto = grpc.loadPackageDefinition(packageDefinition)
 
 const server = new grpc.Server()
-server.addService(helloProto.hello.Greeter.service, {
-  sayHello: (call, callback) => {
-    callback(null, { message: 'Hello ID:' + call.request.id + call.request.name })
+
+server.addService(proto.sample.Sample.service, {
+  get: (call, callback) => {
+    console.log(call.request.id, call.request.name)
+    callback(null, { message: '残業しませんか？' })
+  },
+  stream: (call) => {
+    for(let i = 0; i < 10; i++) {
+      call.write({ message: `残業しませんか？(${i + 1})` })
+    }
+    call.end()
   }
 })
 
