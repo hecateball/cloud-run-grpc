@@ -2,6 +2,9 @@ const grpc = require('grpc')
 const protoLoader = require('@grpc/proto-loader')
 const PROTO_PATH = __dirname + '/hello.proto'
 
+const HOST = process.env.HOST || '0.0.0.0'
+const PORT = process.env.PORT || '8080'
+
 const packageDefinition = protoLoader.loadSync(
   PROTO_PATH,
   {
@@ -15,15 +18,17 @@ const packageDefinition = protoLoader.loadSync(
 const helloProto = grpc.loadPackageDefinition(packageDefinition)
 
 const server = new grpc.Server()
-
-const sayHello = (call, callback) => {
-  callback(null, { message: 'こんにちわ ID:' + call.request.id + call.request.name })
-}
-
 server.addService(helloProto.hello.Greeter.service, {
-  sayHello: sayHello
+  sayHello: (call, callback) => {
+    callback(null, { message: 'Hello ID:' + call.request.id + call.request.name })
+  }
 })
 
-server.bind('127.0.0.1:50051', grpc.ServerCredentials.createInsecure())
-console.log('gRPC server running at http://127.0.0.1:50051')
-server.start()
+server.bindAsync(`${HOST}:${PORT}`, grpc.ServerCredentials.createInsecure(), (error) => {
+  if(error !== null) {
+    throw error
+  }
+  server.start()
+  console.log(`gRPC server running at ${HOST}:${PORT}`)
+})
+
