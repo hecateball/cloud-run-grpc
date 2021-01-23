@@ -1,0 +1,12 @@
+{
+  "name": "grpc-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client.js",
+  "author": "hecateball",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.6",
+    "grpc": "^1.24.4"
+  }
+}
